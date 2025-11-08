@@ -1,0 +1,102 @@
+service: nest-postgres-aws-lambda
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-1
+  memorySize: 512
+  timeout: 15
+  stage: ${opt:stage, 'dev'}
+  tracing:
+    lambda: true
+    apiGateway: true
+  environment:
+    NODE_ENV: production
+    STAGE: ${self:provider.stage}
+  apiGateway:
+    binaryMediaTypes:
+      - multipart/form-data
+      - '*/*'
+    minimumCompressionSize: 128
+
+functions:
+  api:
+    handler: dist/main_severless.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors:
+            origin: '*'
+            headers:
+              - '*'
+            allowCredentials: false
+      - http:
+          path: /{proxy+}
+          method: OPTIONS
+          cors:
+            origin: '*'
+            headers:
+              - '*'
+            allowCredentials: false
+  queueProcessor:
+    handler: dist/lambdas/sqs-processor.handler
+    events:
+      - sqs:
+          arn: !GetAtt MessageQueue.Arn
+          batchSize: 10
+
+plugins:
+  - serverless-api-gateway-throttling
+  - serverless-prune-plugin
+
+custom:
+  apiGatewayThrottling:
+    maxRequestsPerSecond: 50
+    maxConcurrentRequests: 50
+
+  prune:
+    automatic: true
+    number: 2
+    includeLayers: true
+    dryRun: false
+
+package:
+  patterns:
+    - dist/**
+    - node_modules/**
+    - package.json
+    - .env
+
+    - '!src/**'
+    - '!node_modules/swagger-ui-dist/**'
+    - '!node_modules/serverless/**'
+    - '!node_modules/serverless-prune-plugin/**'
+    - '!node_modules/serverless-api-gateway-throttling/**'
+    - '!node_modules/rxjs/src/**'
+    - '!node_modules/rxjs/_esm2015/**'
+    - '!node_modules/rxjs/_esm5/**'
+    - '!node_modules/**/*.md'
+    - '!node_modules/**/*.ts'
+    - '!node_modules/**/test/**'
+    - '!node_modules/**/tests/**'
+    - '!node_modules/**/*.test.js'
+    - '!node_modules/**/*.spec.js'
+    - '!node_modules/**/docs/**'
+    - '!node_modules/**/examples/**'
+
+resources:
+  Resources:
+    MessageQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:service}-queue
+        VisibilityTimeout: 90
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DLQ.Arn
+          maxReceiveCount: 3
+    
+    DLQ:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:service}-dlq

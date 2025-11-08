@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capstone API - Documentation</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.10.5/swagger-ui.css" />
+    <link rel="icon" type="image/png" href="https://petstore.swagger.io/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="https://petstore.swagger.io/favicon-16x16.png" sizes="16x16" />
+    <style>
+        html {
+            box-sizing: border-box;
+            overflow: -moz-scrollbars-vertical;
+            overflow-y: scroll;
+        }
+
+        *,
+        *:before,
+        *:after {
+            box-sizing: inherit;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .swagger-ui .topbar {
+            background-color: #1b1b1b;
+        }
+
+        .swagger-ui .topbar .download-url-wrapper {
+            display: none;
+        }
+
+        /* Custom styling */
+        .topbar-wrapper {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .topbar-wrapper img {
+            height: 40px;
+            margin-right: 12px;
+        }
+
+        .topbar-wrapper .title {
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5.10.5/swagger-ui-bundle.js" crossorigin></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5.10.5/swagger-ui-standalone-preset.js" crossorigin></script>
+    <script>
+        window.onload = function() {
+            // Begin Swagger UI call region
+            const ui = SwaggerUIBundle({
+                // Load the swagger spec from the JSON file
+                url: "./swagger-spec.json",
+                
+                // Or you can directly embed the spec (uncomment if needed):
+                // spec: {...your spec here...},
+                
+                dom_id: '#swagger-ui',
+                
+                deepLinking: true,
+                
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                
+                layout: "StandaloneLayout",
+                
+                // Try it out enabled by default
+                tryItOutEnabled: true,
+                
+                // Request interceptor to add custom headers if needed
+                requestInterceptor: (request) => {
+                    // You can modify requests here
+                    // For example, add custom headers:
+                    // request.headers['Custom-Header'] = 'value';
+                    return request;
+                },
+                
+                // Response interceptor
+                responseInterceptor: (response) => {
+                    // You can modify responses here
+                    return response;
+                },
+                
+                // Persist authorization data
+                persistAuthorization: true,
+                
+                // Display operation id
+                displayOperationId: false,
+                
+                // Display request duration
+                displayRequestDuration: true,
+                
+                // Default models expand depth
+                defaultModelsExpandDepth: 1,
+                
+                // Default model expand depth
+                defaultModelExpandDepth: 1,
+                
+                // Show extensions
+                showExtensions: true,
+                
+                // Show common extensions
+                showCommonExtensions: true,
+                
+                // Enable CORS
+                validatorUrl: null,
+                
+                // Supported submit methods
+                supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'],
+                
+                // OAuth2 redirect URL (if using OAuth2)
+                // oauth2RedirectUrl: window.location.origin + '/oauth2-redirect.html',
+                
+                // Filter operations by tags
+                // filter: true,
+                
+                // Syntax highlight theme
+                syntaxHighlight: {
+                    activate: true,
+                    theme: "monokai"
+                },
+            });
+            
+            window.ui = ui;
+        };
+    </script>
+</body>
+</html>

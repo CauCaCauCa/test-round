@@ -1,0 +1,207 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Category {
+  createdAt: DateTime!
+  icon: String
+  id: Int!
+  isActive: Boolean!
+  name: String!
+
+  """Get parent category"""
+  parent: Category
+  parentId: Int
+  slug: String!
+  updatedAt: DateTime!
+}
+
+input CreateCategoryInput {
+  icon: String
+  isActive: Boolean! = true
+  name: String!
+  parentId: Int
+  slug: String!
+}
+
+input CreateNewsInput {
+  authorId: Int
+  categoryId: Int
+  longDescription: String!
+  publishedAt: DateTime
+  shortDescription: String
+  slug: String!
+  status: String! = "draft"
+  thumbnail: String
+  title: String!
+  viewCount: Int! = 0
+}
+
+input CreateUserInput {
+  email: String!
+  fullName: String!
+  isActive: Boolean! = true
+  password: String!
+  role: String! = "user"
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input FilterCategoryInput {
+  icon: JSON
+  isActive: JSON
+  name: JSON
+  parentId: JSON
+  slug: JSON
+}
+
+input FilterNewsInput {
+  authorId: JSON
+  categoryId: JSON
+  slug: JSON
+  status: JSON
+  title: JSON
+  viewCount: JSON
+}
+
+input FilterUserInput {
+  email: JSON
+  fullName: JSON
+  isActive: JSON
+  role: JSON
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Mutation {
+  """Create new category"""
+  createCategory(input: CreateCategoryInput!): Category!
+
+  """Create new news"""
+  createNews(input: CreateNewsInput!): News!
+
+  """Create new user"""
+  createUser(input: CreateUserInput!): User!
+
+  """Delete category"""
+  deleteCategory(id: Int!): Category
+
+  """Delete news"""
+  deleteNews(id: Int!): News
+
+  """Delete user"""
+  deleteUser(id: Int!): User
+
+  """Increment view count"""
+  incrementViewCount(id: Int!): News
+
+  """Create new news as publisher"""
+  publisherCreateNews(input: CreateNewsInput!): News!
+
+  """Delete own news as publisher"""
+  publisherDeleteNews(id: Int!): News
+
+  """Update own news as publisher"""
+  publisherUpdateNews(id: Int!, input: UpdateNewsInput!): News
+
+  """Update category"""
+  updateCategory(id: Int!, input: UpdateCategoryInput!): Category
+
+  """Update news"""
+  updateNews(id: Int!, input: UpdateNewsInput!): News
+
+  """Update user"""
+  updateUser(id: Int!, input: UpdateUserInput!): User
+}
+
+type News {
+  """Get news author"""
+  author: User!
+  authorId: Int!
+
+  """Get news category"""
+  category: Category!
+  categoryId: Int!
+  createdAt: DateTime!
+  id: Int!
+  longDescription: String!
+  publishedAt: DateTime
+  shortDescription: String
+  slug: String!
+  status: String!
+  thumbnail: String
+  title: String!
+  updatedAt: DateTime!
+  viewCount: Int!
+}
+
+type Query {
+  """Get all categories"""
+  categories(filter: FilterCategoryInput): [Category!]!
+
+  """Get category by ID"""
+  category(id: Int!): Category
+
+  """Get a specific news by ID (only if owned by publisher)"""
+  myNews(id: Int!): News
+
+  """Get list of news created by the authenticated publisher"""
+  myNewsList(filter: FilterNewsInput): [News!]!
+
+  """Get news by ID"""
+  news(id: Int!): News
+
+  """Get all news"""
+  newsList(filter: FilterNewsInput): [News!]!
+
+  """Get user by ID"""
+  user(id: Int!): User
+
+  """Get all users"""
+  users(filter: FilterUserInput): [User!]!
+}
+
+input UpdateCategoryInput {
+  icon: String
+  isActive: Boolean
+  name: String
+  parentId: Int
+  slug: String
+}
+
+input UpdateNewsInput {
+  authorId: Int
+  categoryId: Int
+  longDescription: String
+  publishedAt: DateTime
+  shortDescription: String
+  slug: String
+  status: String
+  thumbnail: String
+  title: String
+  viewCount: Int
+}
+
+input UpdateUserInput {
+  email: String
+  fullName: String
+  isActive: Boolean
+  password: String
+  role: String
+}
+
+type User {
+  createdAt: DateTime!
+  email: String!
+  fullName: String!
+  id: Int!
+  isActive: Boolean!
+  role: String!
+  updatedAt: DateTime!
+}
