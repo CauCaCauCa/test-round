@@ -1,9 +1,25 @@
-import { eq, and, or, like, ilike, gt, gte, lt, lte, ne, inArray, notInArray, isNull, isNotNull, between } from 'drizzle-orm';
+import { eq, and, or, like, ilike, gt, gte, lt, lte, ne, inArray, notInArray, isNull, isNotNull, between, asc, desc, count } from 'drizzle-orm';
 import { db_client } from 'src/_core/config/database/postgres/drizzle';
 
 // Format: field: ["operator", value]
 export class FilterType {
-    [key: string]: [string, any];
+    [key: string]: [string, any] | number | string | undefined;
+    page?: number;          // Page number (starts from 1)
+    limit?: number;         // Number of items per page
+    sortBy?: string;        // Field to sort by
+    sortOrder?: 'asc' | 'desc';  // Sort order
+}
+
+export interface PaginatedResult<T> {
+    data: T[];
+    meta: {
+        total: number;      // Total number of records
+        page: number;       // Current page
+        limit: number;      // Items per page
+        totalPages: number; // Total number of pages
+        hasNext: boolean;   // Has next page
+        hasPrev: boolean;   // Has previous page
+    };
 }
 
 export class BaseCrudService {
@@ -93,11 +109,14 @@ export class BaseCrudService {
     }
 
     async findAll(filter: any = {}) {
+        // Extract pagination and sorting params from filter
+        const { page, limit, sortBy, sortOrder, ...filterFields } = filter;
+
         let query: any = db_client.select().from(this.table);
 
         // If filter exists, apply conditions
-        if (filter && Object.keys(filter).length > 0) {
-            const conditions = Object.entries(filter).map(([key, value]) => {
+        if (filterFields && Object.keys(filterFields).length > 0) {
+            const conditions = Object.entries(filterFields).map(([key, value]) => {
                 const column = this.table[key];
                 if (column && value !== undefined && value !== null) {
                     const { operator, value: parsedValue } = this.parseFilterValue(value);
@@ -111,9 +130,31 @@ export class BaseCrudService {
             }
         }
 
+        // Apply sorting if provided
+        if (sortBy && this.table[sortBy]) {
+            const sortColumn = this.table[sortBy];
+            query = query.orderBy(sortOrder === 'desc' ? desc(sortColumn) : asc(sortColumn));
+        }
+
+        // Apply pagination if provided
+        if (limit !== undefined && limit > 0) {
+            const pageSize = Math.min(100, limit); // Max 100 items
+            query = query.limit(pageSize);
+
+            if (page !== undefined && page > 0) {
+                const offset = (page - 1) * pageSize;
+                query = query.offset(offset);
+            }
+        }
+
         const result = await query;
 
-        return result;
+        return {
+            data: result,
+            meta: {
+                total: result.length,
+            }
+        }
     }
 
     async findOne(id: number) {

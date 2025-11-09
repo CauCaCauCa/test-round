@@ -8,7 +8,7 @@ import { JWTGuardNullAble } from '../../_auth/guards/jwt-nullable.guard';
 import { User } from '../types/user.type';
 import { SqsService } from '../../_sqs/sqs.service';
 import { Category } from '../types/category.type';
-import { CreateNewsInput, FilterNewsInput, News, UpdateNewsInput } from '../types/news.type';
+import { CreateNewsInput, FilterNewsInput, News, NewsListResponse, UpdateNewsInput } from '../types/news.type';
 
 @Resolver(() => News)
 export class NewsResolver {
@@ -19,7 +19,7 @@ export class NewsResolver {
     private sqsService: SqsService,
   ) { }
 
-  @Query(() => [News], { name: 'newsList', description: 'Get all news' })
+  @Query(() => NewsListResponse, { name: 'newsList', description: 'Get all news' })
   @UseGuards(JWTGuardNullAble)
   async getNewsList(
     @Args('filter', { type: () => FilterNewsInput, nullable: true }) filter?: FilterNewsInput

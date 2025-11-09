@@ -2,22 +2,21 @@ import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { AdminGuard } from '../../_auth/guards/admin.guard';
-import { CreateUserInput, FilterUserInput, UpdateUserInput, User } from '../types/user.type';
+import { CreateUserInput, FilterUserInput, UpdateUserInput, User, UserListResponse } from '../types/user.type';
 
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(private userService: UserService) { }
 
-  @Query(() => [User], { name: 'users', description: 'Get all users' })
-  @UseGuards(AdminGuard)
+  @Query(() => UserListResponse, { name: 'users', description: 'Get all users' })
   async getUsers(
     @Args('filter', { type: () => FilterUserInput, nullable: true }) filter?: FilterUserInput
   ) {
     return this.userService.findAll(filter);
   }
 
-  @Query(() => [User], { name: 'publishers', description: 'Get all publishers' })
+  @Query(() => UserListResponse, { name: 'publishers', description: 'Get all publishers' })
   async getPublishers(
     @Args('filter', { type: () => FilterUserInput, nullable: true }) filter?: FilterUserInput
   ) {
@@ -26,7 +25,6 @@ export class UserResolver {
   }
 
   @Query(() => User, { name: 'user', description: 'Get user by ID', nullable: true })
-  @UseGuards(AdminGuard)
   async getUser(
     @Args('id', { type: () => Int }) id: number
   ) {

@@ -2,13 +2,13 @@ import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent, Context, In
 import { UseGuards } from '@nestjs/common';
 import { CategoryService } from '../services/category.service';
 import { AdminGuard } from '../../_auth/guards/admin.guard';
-import { Category, CreateCategoryInput, FilterCategoryInput, UpdateCategoryInput } from '../types/category.type';
+import { Category, CategoryListResponse, CreateCategoryInput, FilterCategoryInput, UpdateCategoryInput } from '../types/category.type';
 
 @Resolver(() => Category)
 export class CategoryResolver {
   constructor(private categoryService: CategoryService) { }
 
-  @Query(() => [Category], { name: 'categories', description: 'Get all categories' })
+  @Query(() => CategoryListResponse, { name: 'categories', description: 'Get all categories' })
   async getCategories(
     @Args('filter', { type: () => FilterCategoryInput, nullable: true }) filter?: FilterCategoryInput
   ) {

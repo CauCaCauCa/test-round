@@ -43,6 +43,15 @@ export class User {
   updatedAt!: Date;
 }
 
+@ObjectType()
+export class UserListResponse {
+  @Field(() => [User])
+  data!: User[];
+
+  @Field(() => GraphQLJSON)
+  meta!: any;
+}
+
 @InputType()
 export class CreateUserInput {
   @Field()

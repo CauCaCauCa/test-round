@@ -20,6 +20,20 @@ export class FilterNewsInput {
 
   @Field(() => GraphQLJSON, { nullable: true })
   viewCount?: [string, any];
+
+  // Pagination fields
+  @Field(() => Int, { nullable: true, description: 'Page number (starts from 1)' })
+  page?: number;
+
+  @Field(() => Int, { nullable: true, description: 'Number of items per page' })
+  limit?: number;
+
+  // Sorting fields
+  @Field({ nullable: true, description: 'Field to sort by' })
+  sortBy?: string;
+
+  @Field({ nullable: true, description: 'Sort order: asc or desc' })
+  sortOrder?: string;
 }
 
 @ObjectType()
@@ -63,6 +77,17 @@ export class News {
   @Field()
   updatedAt!: Date;
 }
+
+@ObjectType()
+export class NewsListResponse {
+  @Field(() => [News])
+  data!: News[];
+
+  @Field(() => GraphQLJSON)
+  meta!: any;
+}
+
+
 
 @InputType()
 export class CreateNewsInput {

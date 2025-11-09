@@ -46,6 +46,15 @@ export class Category {
   updatedAt!: Date;
 }
 
+@ObjectType()
+export class CategoryListResponse {
+  @Field(() => [Category])
+  data!: Category[];
+
+  @Field(() => GraphQLJSON)
+  meta!: any;
+}
+
 @InputType()
 export class CreateCategoryInput {
   @Field()

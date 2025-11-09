@@ -3,7 +3,7 @@ import { UseGuards } from '@nestjs/common';
 import { NewsService } from '../services/news.service';
 import { CategoryService } from '../services/category.service';
 import { PublisherGuard } from '../../_auth/guards/publisher.guard';
-import { News, CreateNewsInput, UpdateNewsInput, FilterNewsInput } from '../types/news.type';
+import { News, CreateNewsInput, UpdateNewsInput, FilterNewsInput, NewsListResponse } from '../types/news.type';
 import { Category } from '../types/category.type';
 
 @Resolver(() => News)
@@ -14,7 +14,7 @@ export class PublisherResolver {
   ) { }
 
   // ============ QUERIES ============
-  @Query(() => [News], { name: 'myNewsList', description: 'Get list of news created by the authenticated publisher' })
+  @Query(() => NewsListResponse, { name: 'myNewsList', description: 'Get list of news created by the authenticated publisher' })
   @UseGuards(PublisherGuard)
   async getMyNewsList(
     @Context() ctx: any,
